@@ -1,8 +1,8 @@
 #include <windows.h>
 #include <iostream>
-//  7C --> 7F
 #include <tlhelp32.h>
-unsigned long long lv = 0x7F;
+
+unsigned long long lv = 0x7F; //  7C --> 7F
 
 DWORD GetPID(const char* pn)
 {
@@ -31,6 +31,7 @@ DWORD GetPID(const char* pn)
 	CloseHandle(hSnap);
 	return procId;
 }
+
 uintptr_t GetBaseAddr(DWORD proid, const char* modName)
 {
 	uintptr_t modBaseAddr = 0;
@@ -54,7 +55,8 @@ uintptr_t GetBaseAddr(DWORD proid, const char* modName)
 	CloseHandle(hSnap);
 	return modBaseAddr;
 }
-int main(int argc, char* argv[]) {
+
+int wmain() {
 
 	DWORD tpid = 0;
 	HANDLE hw = OpenProcess(PROCESS_ALL_ACCESS, 0, tpid = GetPID("HackTheBox CubeMadness1.exe"));
@@ -67,11 +69,15 @@ int main(int argc, char* argv[]) {
 	if (!hw)
 	{
 		printf("not found");
+		CloseHandle(hw);
 		exit(-1);
 	}
 
 	if (!WriteProcessMemory(hw, (LPVOID)(base + 0xA681FB), &lv, 1, 0))
+	{
+		CloseHandle(hw);
 		exit(-1);
+	}
 
 	return 0;
 }
